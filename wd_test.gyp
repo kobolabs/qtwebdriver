@@ -42,7 +42,6 @@
               '-lQt5MultimediaWidgets',
               '-lQt5Sensors',
               '-lQt5Multimedia',
-              '-lQt5Positioning',
             ],
           } ],
           ['OS=="win"', {

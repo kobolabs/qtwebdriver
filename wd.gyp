@@ -13,6 +13,7 @@
       'dependencies': [
         'base.gyp:chromium_base',
         'wd_core.gyp:WebDriver_core',
+        'wd_setup.gyp:WebDriver_setup',
       ],
 
       'conditions': [
@@ -51,6 +52,7 @@
           'dependencies': [
             'base.gyp:chromium_base_shared',
             'wd_core.gyp:WebDriver_core_shared',
+            'wd_setup.gyp:WebDriver_setup_shared',
           ],
         } ],
 
