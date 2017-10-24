@@ -25,6 +25,8 @@
 
 #include <iostream>
 
+#include "webdriver_setup.h"
+
 #include "base/at_exit.h"
 #include "webdriver_server.h"
 #include "webdriver_view_transitions.h"
@@ -37,10 +39,6 @@
 #define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS 1
 #define HAVE_STRUCT_TIMESPEC 1
 #endif
-
-#include "extension_qt/quick2_view_creator.h"
-#include "extension_qt/quick2_view_executor.h"
-#include "extension_qt/quick2_view_enumerator.h"
 
 #include "extension_qt/web_view_creator.h"
 #include "extension_qt/web_view_executor.h"
@@ -61,7 +59,11 @@
 #include "extension_qt/uinput_manager.h"
 #include "webdriver_switches.h"
 
-int wd_setup(int argc, char *argv[])
+WebDriverPlugin::WebDriverPlugin() : super()
+{
+}
+
+int WebDriverPlugin::configure(int argc, char** argv)
 {
     webdriver::ViewRunner::RegisterCustomRunner<webdriver::QViewRunner>();
 
@@ -106,13 +108,6 @@ int wd_setup(int argc, char *argv[])
 #endif //QT_VERSION
 #endif //OS_WIN
 
-    /* Parse command line */
-    webdriver::Server* wd_server = webdriver::Server::GetInstance();
-    if (0 != wd_server->Configure(cmd_line)) {
-        std::cout << "Error while configuring WD server, exiting..." << std::endl;
-        return 1;
-    }
-
     /* check for Linux UInput input support */
 #ifdef OS_LINUX
     if (cmd_line.HasSwitch(webdriver::Switches::kUserInputDevice))
@@ -127,12 +122,18 @@ int wd_setup(int argc, char *argv[])
     }
 #endif // OS_LINUX
 
-    /* Start webdriver */
-    int startError = wd_server->Start();
-    if (startError){
-        std::cout << "Error while starting server, errorCode " << startError << std::endl;
-        return startError;
-    }
+    webdriver::Server* wd_server = webdriver::Server::GetInstance();
+    return wd_server->Configure(cmd_line);
+}
 
-    return startError;
+int WebDriverPlugin::start()
+{
+    webdriver::Server* wd_server = webdriver::Server::GetInstance();
+    return wd_server->Start();
+}
+
+int WebDriverPlugin::stop(bool force)
+{
+    webdriver::Server* wd_server = webdriver::Server::GetInstance();
+    return wd_server->Stop(force);
 }

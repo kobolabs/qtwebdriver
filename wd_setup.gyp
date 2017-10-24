@@ -196,7 +196,9 @@
       'standalone_static_library': 1,
 
       'sources': [
+        'src/setup/webdriver_setup.h',
         'src/setup/webdriver_setup.cc',
+        '<(INTERMEDIATE_DIR)/moc_webdriver_setup.cc',
       ],
       'dependencies': [
         'base.gyp:chromium_base',
@@ -210,10 +212,8 @@
 
       'product_name': 'WebDriver_setup',
 
-      'sources': [
-        'src/setup/webdriver_setup.cc',
-      ],
       'dependencies': [
+        'WebDriver_setup',
         'base.gyp:chromium_base',
         'wd_core.gyp:WebDriver_core',
         'wd_ext_qt.gyp:WebDriver_extension_qt_base',
