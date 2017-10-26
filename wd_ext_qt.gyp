@@ -27,6 +27,7 @@
       'standalone_static_library': 1,
 
       'sources': [
+        'src/webdriver/extension_qt/touch_device_manager.cc',
         'src/webdriver/extension_qt/q_content_type_resolver.cc',
         'src/webdriver/extension_qt/q_view_runner.cc',
         'src/webdriver/extension_qt/q_proxy_parser.cc',

@@ -70,7 +70,6 @@ protected:
     QTouchEvent* createTouchEvent(QEvent::Type eventType, Qt::TouchPointStates touchPointStates, const QList<QTouchEvent::TouchPoint> &touchPoints);
 
 private:
-    QTouchDevice touchDevice;
     DISALLOW_COPY_AND_ASSIGN(QWindowViewCmdExecutor);
 };
 

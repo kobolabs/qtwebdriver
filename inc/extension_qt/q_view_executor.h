@@ -73,9 +73,6 @@ protected:
     QTouchEvent* createTouchEvent(QEvent::Type eventType, Qt::TouchPointStates touchPointStates, const QList<QTouchEvent::TouchPoint> &touchPoints);
     QTouchEvent* create2PointTouchEvent(QEvent::Type eventType, Qt::TouchPointStates touchPointStates, QPointF &point1, QPointF &point2);
     QTouchEvent::TouchPoint createTouchPointWithId(Qt::TouchPointState state, QPointF &point, int id);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-  QTouchDevice touchDevice;
-#endif
 
     void saveScreenshot(QPixmap& pixmap, std::string* png, Error** error);
 

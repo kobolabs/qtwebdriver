@@ -18,6 +18,7 @@
 ****************************************************************************/
 
 #include "extension_qt/qwindow_view_executor.h"
+#include "extension_qt/touch_device_manager.h"
 
 #include "webdriver_logging.h"
 #include "webdriver_session.h"
@@ -39,7 +40,6 @@ namespace webdriver {
 
 QWindowViewCmdExecutor::QWindowViewCmdExecutor(Session* session, ViewId viewId)
     : ViewCmdExecutor(session, viewId) {
-     touchDevice.setCapabilities(QTouchDevice::Velocity);
 }
 
 QWindowViewCmdExecutor::~QWindowViewCmdExecutor() {
@@ -323,7 +323,7 @@ QTouchEvent* QWindowViewCmdExecutor::create2PointTouchEvent(QEvent::Type eventTy
 
 QTouchEvent* QWindowViewCmdExecutor::createTouchEvent(QEvent::Type eventType, Qt::TouchPointStates touchPointStates, const QList<QTouchEvent::TouchPoint> &touchPoints)
 {
-    QTouchEvent *touchEvent = new QTouchEvent(eventType, &touchDevice, Qt::NoModifier, touchPointStates, touchPoints);
+    QTouchEvent *touchEvent = new QTouchEvent(eventType, TouchDeviceManager::GetInstance()->getTouchDevice(), Qt::NoModifier, touchPointStates, touchPoints);
     QDateTime current = QDateTime::currentDateTime();
     ulong timestame = current.toMSecsSinceEpoch() & (((qint64)1<<(sizeof(ulong)*8))-1);
     touchEvent->setTimestamp(timestame);
