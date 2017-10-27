@@ -68,8 +68,8 @@ public:
 
 protected:
     QWidget* getView(const ViewId& viewId, Error** error);
-    QTouchEvent::TouchPoint createTouchPoint(Qt::TouchPointState state, QPointF &point);
-    QTouchEvent* createSimpleTouchEvent(QEvent::Type eventType, Qt::TouchPointStates touchPointStates, QPointF point);
+    QTouchEvent::TouchPoint createTouchPoint(Qt::TouchPointState state, QPointF &point, QPointF &scenePoint);
+    QTouchEvent* createSimpleTouchEvent(QEvent::Type eventType, Qt::TouchPointStates touchPointStates, QPointF point, QPointF scenePoint = QPointF(0,0));
     QTouchEvent* createTouchEvent(QEvent::Type eventType, Qt::TouchPointStates touchPointStates, const QList<QTouchEvent::TouchPoint> &touchPoints);
     QTouchEvent* create2PointTouchEvent(QEvent::Type eventType, Qt::TouchPointStates touchPointStates, QPointF &point1, QPointF &point2);
     QTouchEvent::TouchPoint createTouchPointWithId(Qt::TouchPointState state, QPointF &point, int id);

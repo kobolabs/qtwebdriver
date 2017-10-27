@@ -366,16 +366,17 @@ void QViewCmdExecutor::GetOrientation(std::string *orientation, Error **error)
 #endif
 }
 
-QTouchEvent::TouchPoint QViewCmdExecutor::createTouchPoint(Qt::TouchPointState state, QPointF &point)
+QTouchEvent::TouchPoint QViewCmdExecutor::createTouchPoint(Qt::TouchPointState state, QPointF &point, QPointF &scenePoint)
 {
     QTouchEvent::TouchPoint touchPoint(1);
     touchPoint.setPos(point);
+    touchPoint.setScenePos(scenePoint);
     touchPoint.setState(state);
     touchPoint.setPressure(1);
     return touchPoint;
 }
 
-QTouchEvent* QViewCmdExecutor::createSimpleTouchEvent(QEvent::Type eventType, Qt::TouchPointStates touchPointStates, QPointF point)
+QTouchEvent* QViewCmdExecutor::createSimpleTouchEvent(QEvent::Type eventType, Qt::TouchPointStates touchPointStates, QPointF point, QPointF scenePoint)
 {
     QList<QTouchEvent::TouchPoint> points;
     Qt::TouchPointState touchPointState;
@@ -386,7 +387,7 @@ QTouchEvent* QViewCmdExecutor::createSimpleTouchEvent(QEvent::Type eventType, Qt
     else {
         touchPointState = Qt::TouchPointMoved;
     }
-    QTouchEvent::TouchPoint touchPoint = createTouchPoint(touchPointState, point);
+    QTouchEvent::TouchPoint touchPoint = createTouchPoint(touchPointState, point, scenePoint);
     points.append(touchPoint);
     return createTouchEvent(eventType, touchPointStates, points);
 }
