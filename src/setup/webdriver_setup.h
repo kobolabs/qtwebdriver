@@ -12,6 +12,12 @@ public:
 	int configure(int argc, char** argv);
 	int start();
 	int stop(bool force);
+	QObject* getObject();
+
+signals:
+	void sessionStarted();
+	void sessionEnded();
+
 private:
 	typedef QObject super;
 };

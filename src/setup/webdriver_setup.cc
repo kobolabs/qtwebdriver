@@ -56,6 +56,9 @@
 #include "extension_qt/vnc_event_dispatcher.h"
 #include "extension_qt/uinput_event_dispatcher.h"
 
+#include "setup/plugin_session_lifecycle_actions.h"
+#include "setup/session_notifier.h"
+
 #include "extension_qt/uinput_manager.h"
 #include "webdriver_switches.h"
 
@@ -67,7 +70,9 @@ int WebDriverPlugin::configure(int argc, char** argv)
 {
     webdriver::ViewRunner::RegisterCustomRunner<webdriver::QViewRunner>();
 
-    webdriver::SessionLifeCycleActions::RegisterCustomLifeCycleActions<webdriver::QSessionLifeCycleActions>();
+    webdriver::SessionLifeCycleActions::RegisterCustomLifeCycleActions<webdriver::PluginSessionLifeCycleActions>();
+    connect(webdriver::SessionNotifier::GetInstance(), &webdriver::SessionNotifier::sessionStarted, this, &WebDriverPlugin::sessionStarted);
+    connect(webdriver::SessionNotifier::GetInstance(), &webdriver::SessionNotifier::sessionEnded, this, &WebDriverPlugin::sessionEnded);
 
     webdriver::ViewTransitionManager::SetURLTransitionAction(new webdriver::URLTransitionAction_CloseOldView());
 
@@ -136,4 +141,9 @@ int WebDriverPlugin::stop(bool force)
 {
     webdriver::Server* wd_server = webdriver::Server::GetInstance();
     return wd_server->Stop(force);
+}
+
+QObject* WebDriverPlugin::getObject()
+{
+    return this;
 }
