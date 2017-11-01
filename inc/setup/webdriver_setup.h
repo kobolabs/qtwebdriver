@@ -1,6 +1,6 @@
 #include <QtCore/QObject>
 #include <QtCore/QtPlugin>
-#include "setup/WebDriverInterface.h"
+#include "./WebDriverInterface.h"
 
 class WebDriverPlugin : public QObject, public WebDriverInterface {
 	Q_OBJECT

@@ -246,7 +246,7 @@
         'src/setup/session_notifier.cc',
         '<(INTERMEDIATE_DIR)/moc_session_notifier.cc',
         'src/setup/plugin_session_lifecycle_actions.cc',
-        'src/setup/webdriver_setup.h',
+        'inc/setup/webdriver_setup.h',
         'src/setup/webdriver_setup.cc',
         '<(INTERMEDIATE_DIR)/moc_webdriver_setup.cc',
       ],

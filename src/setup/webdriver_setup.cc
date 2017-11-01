@@ -25,7 +25,7 @@
 
 #include <iostream>
 
-#include "webdriver_setup.h"
+#include "setup/webdriver_setup.h"
 
 #include "base/at_exit.h"
 #include "webdriver_server.h"
