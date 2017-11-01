@@ -25,12 +25,9 @@
               '-L<(QT_LIB_PATH)',
               '-lQt5Network',
               '-lQt5Widgets',
-              '-lQt5Quick',
-              '-lQt5Qml',
               '-lQt5Sql',
               '-lQt5Gui',
               '-lQt5Xml',
-              '-lQt5OpenGL',
               '-lQt5PrintSupport',
               '-lQt5Core',
               '-lpthread',
@@ -43,6 +40,19 @@
               '-lQt5Sensors',
               '-lQt5Multimedia',
             ],
+            'conditions': [
+              ['WD_CONFIG_QUICK=="1"', {
+                'libraries': [
+                  '-lQt5Quick',
+                  '-lQt5Qml',
+                ]
+              } ],
+              ['WD_CONFIG_PLAYER=="1"', {
+                'libraries': [
+                  '-lQt5OpenGL',
+                ]
+              } ],
+            ],
           } ],
           ['OS=="win"', {
             'libraries': [
@@ -50,8 +60,6 @@
              '-l<(QT_LIB_PATH)/Qt5Gui',
              '-l<(QT_LIB_PATH)/Qt5Core',
              '-l<(QT_LIB_PATH)/Qt5Widgets',
-             '-l<(QT_LIB_PATH)/Qt5Qml',
-             '-l<(QT_LIB_PATH)/Qt5Quick',
              '-l<(QT_LIB_PATH)/Qt5Xml',
              '-l<(QT_LIB_PATH)/Qt5MultimediaWidgets',
              '-l<(QT_LIB_PATH)/Qt5Multimedia',
@@ -63,6 +71,14 @@
              '-lkernel32.lib',
              '-luserenv.lib',
             ],
+            'conditions': [
+              ['WD_CONFIG_QUICK=="1"', {
+                'libraries': [
+                 '-l<(QT_LIB_PATH)/Qt5Qml',
+                 '-l<(QT_LIB_PATH)/Qt5Quick',
+                ]
+              } ],
+            ],
           } ],
           [ 'OS=="mac"', {
             'link_settings': {
@@ -71,8 +87,6 @@
                 '<(QT_LIB_PATH)/libQt5Gui.a',
                 '<(QT_LIB_PATH)/libQt5Core.a',
                 '<(QT_LIB_PATH)/libQt5Widgets.a',
-                '<(QT_LIB_PATH)/libQt5Qml.a',
-                '<(QT_LIB_PATH)/libQt5Quick.a',
                 '<(QT_LIB_PATH)/libQt5MultimediaWidgets.a',
                 '<(QT_LIB_PATH)/libQt5Multimedia.a',
                 '<(QT_LIB_PATH)/libQt5Xml.a',
@@ -85,6 +99,16 @@
             'xcode_settings': {
               'FRAMEWORK_SEARCH_PATHS': '<(QT_LIB_PATH)',
             },
+            'conditions': [
+              ['WD_CONFIG_QUICK=="1"', {
+                'link_settings': {
+                  'libraries': [
+                    '<(QT_LIB_PATH)/libQt5Qml.a',
+                    '<(QT_LIB_PATH)/libQt5Quick.a',
+                  ]
+                }
+              } ],
+            ],
           } ],
           ['OS=="android"', {
             'libraries': [
@@ -108,9 +132,6 @@
                 '<(QT_LIB_PATH)/libQt5Widgets_iphonesimulator.a',
                 '<(QT_LIB_PATH)/libQt5MultimediaWidgets_iphonesimulator.a',
                 '<(QT_LIB_PATH)/libQt5Multimedia_iphonesimulator.a',
-                '<(QT_LIB_PATH)/libQt5Qml_iphonesimulator.a',
-                '<(QT_LIB_PATH)/libQt5OpenGL_iphonesimulator.a',
-                '<(QT_LIB_PATH)/libQt5Quick_iphonesimulator.a',
                 '<(QT_LIB_PATH)/libQt5Xml_iphonesimulator.a',
                 '<(QT_LIB_PATH)/libQt5PlatformSupport_iphonesimulator.a',
                 '<(QT_LIB_PATH)/../plugins/platforms/libqios_iphonesimulator.a',
@@ -132,6 +153,23 @@
               'ARCHS': '$(ARCHS_STANDARD_32_BIT)',
               'CLANG_WARN_CXX0X_EXTENSIONS': 'NO',
             },
+            'conditions': [
+              ['WD_CONFIG_QUICK=="1"', {
+                'link_settings': {
+                  'libraries': [
+                    '<(QT_LIB_PATH)/libQt5Qml_iphonesimulator.a',
+                    '<(QT_LIB_PATH)/libQt5Quick_iphonesimulator.a',
+                  ]
+                }
+              } ],
+              ['WD_CONFIG_PLAYER=="1"', {
+                'link_settings': {
+                  'libraries': [
+                    '<(QT_LIB_PATH)/libQt5OpenGL_iphonesimulator.a',
+                  ]
+                }
+              } ],
+            ],
           } ],
         ],
       }, {
