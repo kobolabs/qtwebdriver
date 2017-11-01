@@ -22,6 +22,7 @@
         'conditions': [
           ['OS=="linux"', {
             'libraries': [
+              '<(CUSTOM_LIBS)',
               '-L<(QT_LIB_PATH)',
               '-lQt5Network',
               '-lQt5Widgets',
@@ -56,6 +57,7 @@
           } ],
           ['OS=="win"', {
             'libraries': [
+              '<(CUSTOM_LIBS)',
              '-l<(QT_LIB_PATH)/Qt5Network',
              '-l<(QT_LIB_PATH)/Qt5Gui',
              '-l<(QT_LIB_PATH)/Qt5Core',
@@ -83,6 +85,7 @@
           [ 'OS=="mac"', {
             'link_settings': {
               'libraries': [
+                '<(CUSTOM_LIBS)',
                 '<(QT_LIB_PATH)/libQt5Network.a',
                 '<(QT_LIB_PATH)/libQt5Gui.a',
                 '<(QT_LIB_PATH)/libQt5Core.a',
@@ -112,6 +115,7 @@
           } ],
           ['OS=="android"', {
             'libraries': [
+              '<(CUSTOM_LIBS)',
               '-L<(QT_LIB_PATH)',
               '-lQt5Widgets',
               '-lQt5Network',
@@ -126,6 +130,7 @@
           [ 'OS=="ios"', {
             'link_settings': {
               'libraries': [
+                '<(CUSTOM_LIBS)',
                 '<(QT_LIB_PATH)/libQt5Network_iphonesimulator.a',
                 '<(QT_LIB_PATH)/libQt5Gui_iphonesimulator.a',
                 '<(QT_LIB_PATH)/libQt5Core_iphonesimulator.a',
@@ -176,6 +181,7 @@
         'conditions': [
           ['OS=="linux"', {
             'libraries': [
+              '<(CUSTOM_LIBS)',
               '-L<(QT_LIB_PATH)',
               '-lQtNetwork',
               '-lQtGui',
@@ -189,6 +195,7 @@
           } ],
           [ 'OS=="win"', {
             'libraries': [
+              '<(CUSTOM_LIBS)',
               '-l<(QT_LIB_PATH)/QtNetwork4',
               '-l<(QT_LIB_PATH)/QtGui4',
               '-l<(QT_LIB_PATH)/QtXml4',
@@ -206,6 +213,7 @@
           [ 'OS=="mac"', {
             'link_settings': {
               'libraries': [
+                '<(CUSTOM_LIBS)',
                 '<(QT_LIB_PATH)/QtGui.framework',
                 '<(QT_LIB_PATH)/QtCore.framework',
                 '<(QT_LIB_PATH)/QtNetwork.framework',
