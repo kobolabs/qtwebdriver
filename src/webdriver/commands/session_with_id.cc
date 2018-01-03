@@ -37,17 +37,23 @@ void SessionWithID::ExecuteGet(Response* const response) {
 }
 
 void SessionWithID::ExecuteDelete(Response* const response) {
-    // close all views
-    std::vector<ViewId> views;
+    bool reuse_ui = false;
+    session_->get_desired_caps()->GetBoolean(Capabilities::kReuseUI, &reuse_ui);
 
-    session_->RunSessionTask(base::Bind(
-        &ViewEnumerator::EnumerateViews,
-        session_,
-        &views));
+    // close all views if ReuseUI capability is unset
+    if (!reuse_ui) {
+        std::vector<ViewId> views;
 
-    for (size_t i = 0; i < views.size(); ++i) {
-        CloseView(views[i]);
+        session_->RunSessionTask(base::Bind(
+            &ViewEnumerator::EnumerateViews,
+            session_,
+            &views));
+
+        for (size_t i = 0; i < views.size(); ++i) {
+            CloseView(views[i]);
+        }
     }
+
     // Session manages its own lifetime, so do not call delete.
     session_->Terminate();
 }
