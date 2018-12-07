@@ -89,6 +89,8 @@
 #include <QtGui/QGraphicsSimpleTextItem>
 #include <QtGui/QGraphicsTextItem>
 #endif
+#include <QtWebKitWidgets/QWebPage>
+#include <QtWebKitWidgets/QWebFrame>
 
 #include "third_party/pugixml/pugixml.hpp"
 
@@ -909,6 +911,14 @@ void QWidgetViewCmdExecutor::GetElementText(const ElementId& element, std::strin
         if (textValue.canConvert<QString>()) {
             *element_text = textValue.toString().toStdString();
             return;   
+        }
+    }
+
+    foreach(QObject* child, pElement->children()) {
+        if (QWebPage* page = qobject_cast<QWebPage*>(child)) {
+            QWebFrame* frame = page->currentFrame();
+            *element_text = frame->toPlainText().toStdString();
+            return;
         }
     }
 
