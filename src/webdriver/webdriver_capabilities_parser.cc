@@ -46,6 +46,11 @@ const char Capabilities::kWindowPosition[]              = "windowposition";
 const char Capabilities::kMaximize[]                    = "maximize";
 const char Capabilities::kHybrid[]                      = "hybrid";
 const char Capabilities::kReuseUI[]                     = "reuseUI";
+const char Capabilities::kKoboDeviceName[]              = "koboDeviceName";
+const char Capabilities::kKoboBuildRevision[]           = "koboBuildRevision";
+const char Capabilities::kKoboBuildDate[]               = "koboBuildDate";
+const char Capabilities::kKoboAffiliate[]               = "koboAffiliate";
+const char Capabilities::kKoboPlatformID[]              = "koboPlatformID";
 
 namespace {
 

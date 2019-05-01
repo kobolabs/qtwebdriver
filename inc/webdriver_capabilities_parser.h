@@ -80,6 +80,12 @@ struct Capabilities {
 
     static const char kReuseUI[];
 
+    static const char kKoboDeviceName[];
+    static const char kKoboBuildRevision[];
+    static const char kKoboBuildDate[];
+    static const char kKoboAffiliate[];
+    static const char kKoboPlatformID[];
+
     Capabilities();
     ~Capabilities();
 

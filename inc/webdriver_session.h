@@ -230,6 +230,7 @@ private:
     typedef std::map<std::string, ViewHandlePtr> ViewsMap;
 
     bool InitActualCapabilities();
+    bool InitKoboCapabilities();
     bool CheckRequiredCapabilities(const base::DictionaryValue* capabilities_dict);
     bool CheckRequiredBrowser(const base::DictionaryValue* capabilities_dict);
     bool CheckRequiredPlatform(const base::DictionaryValue* capabilities_dict);

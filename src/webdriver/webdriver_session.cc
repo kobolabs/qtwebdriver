@@ -6,6 +6,7 @@
 
 #include <sstream>
 #include <vector>
+#include <cstdlib>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -31,6 +32,9 @@
 #include "webdriver_util.h"
 #include "webdriver_view_executor.h"
 #include "commands/set_timeout_commands.h"
+
+#include <QSettings>
+#include <QtWidgets/QApplication>
 
 #if !defined(OS_WIN)
 #include <sys/types.h>
@@ -110,6 +114,24 @@ bool Session::InitActualCapabilities() {
         reuse_ui = false;
     }
     capabilities_.caps->SetBoolean(Capabilities::kReuseUI, reuse_ui);
+
+    return true;
+}
+
+bool Session::InitKoboCapabilities() {
+    if (const char* product = getenv("PRODUCT")) {
+        capabilities_.caps->SetString(Capabilities::kKoboDeviceName, product);
+    }
+
+    QSettings affiliateSettings(QLatin1String("/mnt/onboard/.kobo/affiliate.conf"), QSettings::IniFormat);
+    QVariant affiliate = affiliateSettings.value("affiliate");
+    if (affiliate.isValid()) {
+        capabilities_.caps->SetString(Capabilities::kKoboAffiliate, affiliate.toString().toStdString());
+    }
+
+    capabilities_.caps->SetString(Capabilities::kKoboBuildRevision, qApp->property("kobo.version").toString().toStdString());
+    capabilities_.caps->SetString(Capabilities::kKoboBuildDate, qApp->property("kobo.build_date").toString().toStdString());
+    capabilities_.caps->SetString(Capabilities::kKoboPlatformID, qApp->property("kobo.platform_guid").toString().toStdString());
 
     return true;
 }
@@ -274,6 +296,7 @@ Error* Session::Init(const base::DictionaryValue* desired_capabilities_dict,
                     JsonStringifyForDisplay(desired_capabilities_dict));
 
     (void) InitActualCapabilities();
+    (void) InitKoboCapabilities();
 
     if (required_capabilities_dict) {
         required_caps_.reset(required_capabilities_dict->DeepCopy());
