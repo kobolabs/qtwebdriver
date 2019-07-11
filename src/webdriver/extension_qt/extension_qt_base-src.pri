@@ -13,6 +13,7 @@ $$INC_DIR/extension_qt/widget_view_creator.h \
 $$INC_DIR/extension_qt/widget_view_enumerator.h \
 $$INC_DIR/extension_qt/widget_view_executor.h \
 $$INC_DIR/extension_qt/widget_view_handle.h \
+$$INC_DIR/extension_qt/web_page_view_handle.h \
 $$SRC_DIR/third_party/des/d3des.h \
 $$SRC_DIR/webdriver/extension_qt/q_event_filter.h
 
@@ -26,6 +27,7 @@ $$SRC_DIR/webdriver/extension_qt/q_session_lifecycle_actions.cc \
 $$SRC_DIR/webdriver/extension_qt/widget_view_util.cc \
 $$SRC_DIR/webdriver/extension_qt/common_util.cc \
 $$SRC_DIR/webdriver/extension_qt/widget_view_handle.cc \
+$$SRC_DIR/webdriver/extension_qt/web_page_view_handle.cc \
 $$SRC_DIR/webdriver/extension_qt/widget_element_handle.cc \
 $$SRC_DIR/webdriver/extension_qt/q_view_executor.cc \
 $$SRC_DIR/webdriver/extension_qt/widget_view_creator.cc \

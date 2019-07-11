@@ -82,7 +82,7 @@ void QNetworkAccessManagerTracer::writeReply(QNetworkReply *reply) {
     message_entry->SetDouble("tts", thread_timestamp);
 
     base::DictionaryValue* entry = new base::DictionaryValue;
-    std::string webview = webdriver::QWebViewUtil::getWebView(session_,session_->current_view())->metaObject()->className();
+    std::string webview = webdriver::QWebViewUtil::getWebPageWidget(session_,session_->current_view())->metaObject()->className();
     entry->SetString("webview", webview);
     entry->Set("message", message_entry);
     std::string log_entry = webdriver::JsonStringifyForDisplay(entry);

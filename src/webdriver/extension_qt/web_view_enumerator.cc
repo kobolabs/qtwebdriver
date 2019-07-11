@@ -22,7 +22,7 @@
 #include "webdriver_session.h"
 #include "webdriver_logging.h"
 
-#include "extension_qt/widget_view_handle.h"
+#include "extension_qt/web_page_view_handle.h"
 
 #include <QtCore/QGlobalStatic>
 #include <QtCore/QDebug>
@@ -41,13 +41,16 @@ namespace webdriver {
 void WebViewEnumeratorImpl::EnumerateViews(Session* session, std::set<ViewId>* views) const {
     session->logger().Log(kInfoLogLevel, ">>>>> WebView enumerate");
 
-    foreach(QWidget* pWidget, qApp->allWidgets())
-    {
-        if (pWidget->isHidden()) continue;
+    foreach(QWidget* topLevelWidget, qApp->topLevelWidgets()) {
+        if (topLevelWidget->isHidden()) continue;
 
-        QWebView* pView = qobject_cast<QWebView*>(pWidget);
-        if (pView != NULL) {
-            ViewHandlePtr handle(new QViewHandle(pView));
+        auto webPages = topLevelWidget->findChildren<QWebPage *>();
+        foreach(QWebPage* webPage, webPages)
+        {
+            QWidget* pWidget = qobject_cast<QWidget*>(webPage->parent());
+            if (!pWidget || pWidget->isHidden()) continue;
+
+            ViewHandlePtr handle(new WebPageViewHandle(pWidget, webPage));
             ViewId viewId = session->GetViewForHandle(handle);
             if (!viewId.is_valid()) {
                 if (session->AddNewView(handle, &viewId))  {

@@ -22,7 +22,7 @@
 #include "webdriver_error.h"
 #include "q_content_type_resolver.h"
 
-#include "extension_qt/widget_view_handle.h"
+#include "extension_qt/web_page_view_handle.h"
 #include <QtNetwork/QNetworkAccessManager>
 
 
@@ -74,16 +74,28 @@ bool QWebViewUtil::isUrlSupported(const std::string& url, Error **error) {
     return pWebPage->supportsContentType(QString::fromStdString(mimeType));
 }   
 
-QWebView* QWebViewUtil::getWebView(Session* session, const ViewId& viewId) {
-	ViewHandle* viewHandle =  session->GetViewHandle(viewId);
+QWidget* QWebViewUtil::getWebPageWidget(Session* session, const ViewId& viewId) {
+	ViewHandle* viewHandle = session->GetViewHandle(viewId);
 	if (NULL == viewHandle) 
 		return NULL;
 
-    QViewHandle* qViewHandle = dynamic_cast<QViewHandle*>(viewHandle);
-    if (NULL == qViewHandle)
+    WebPageViewHandle* webPageView = dynamic_cast<WebPageViewHandle*>(viewHandle);
+    if (NULL == webPageView)
     	return NULL;
 
-    return qobject_cast<QWebView*>(qViewHandle->get());
+    return webPageView->get();
+}
+
+QWebPage* QWebViewUtil::getWebPage(Session* session, const ViewId& viewId) {
+    ViewHandle* viewHandle = session->GetViewHandle(viewId);
+    if (NULL == viewHandle)
+        return NULL;
+
+    WebPageViewHandle* webPageView = dynamic_cast<WebPageViewHandle*>(viewHandle);
+    if (NULL == webPageView)
+        return NULL;
+
+    return webPageView->getWebPage();
 }
 
 

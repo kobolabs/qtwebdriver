@@ -62,7 +62,7 @@ namespace webdriver {
         *error = new Error(kNoSuchWindow); \
         return; \
     } \
-    webkitProxy_ = yasper::ptr<QWebkitProxy>(new QWebkitProxy(session_, (view_)?view_->page():NULL));
+    webkitProxy_ = yasper::ptr<QWebkitProxy>(new QWebkitProxy(session_, page_));
 
 const ViewType QWebViewCmdExecutorCreator::WEB_VIEW_TYPE = 0x13f0;
 
@@ -72,8 +72,8 @@ QWebViewCmdExecutorCreator::QWebViewCmdExecutorCreator()
 QWebViewCmdExecutorCreator::~QWebViewCmdExecutorCreator() {}
 
 ViewCmdExecutor* QWebViewCmdExecutorCreator::CreateExecutor(Session* session, ViewId viewId) const {
-    QWebView* pWebView = QWebViewUtil::getWebView(session, viewId);
-    if (NULL != pWebView) {
+    QWidget* pWebPageWidget = QWebViewUtil::getWebPageWidget(session, viewId);
+    if (NULL != pWebPageWidget) {
         session->logger().Log(kFineLogLevel, "Web executor for view("+viewId.id()+")");
         return new QWebViewCmdExecutor(session, viewId);
     }
@@ -82,9 +82,9 @@ ViewCmdExecutor* QWebViewCmdExecutorCreator::CreateExecutor(Session* session, Vi
 }
 
 bool QWebViewCmdExecutorCreator::CanHandleView(Session* session, ViewId viewId, ViewType* viewType) const {
-    QWebView* pWebView = QWebViewUtil::getWebView(session, viewId);
+    QWidget* pWebPageWidget = QWebViewUtil::getWebPageWidget(session, viewId);
 
-    if (NULL != pWebView) {
+    if (NULL != pWebPageWidget) {
         if (NULL != viewType) *viewType = WEB_VIEW_TYPE;
         return true;
     }
@@ -99,33 +99,35 @@ std::string QWebViewCmdExecutorCreator::GetViewTypeName() const {
 QWebViewCmdExecutor::QWebViewCmdExecutor(Session* session, ViewId viewId)
     : QViewCmdExecutor(session, viewId) {
 
-    view_ = QWebViewUtil::getWebView(session_, viewId);
-    //webkitProxy_.reset(new QWebkitProxy(session_, (view_)?view_->page():NULL));
+    view_ = QWebViewUtil::getWebPageWidget(session_, viewId);
+    page_ = QWebViewUtil::getWebPage(session_, viewId);
+    //webkitProxy_.reset(new QWebkitProxy(session_, (view_)?page_:NULL));
 }
 
 QWebViewCmdExecutor::~QWebViewCmdExecutor() {}
 
-QWebView* QWebViewCmdExecutor::getView(const ViewId& viewId, Error** error) {
-    QWebView* pWebView = QWebViewUtil::getWebView(session_, viewId);
+QWidget* QWebViewCmdExecutor::getView(const ViewId& viewId, Error** error) {
+    QWidget* pWebPageWidget = QWebViewUtil::getWebPageWidget(session_, viewId);
 
-    if (NULL == pWebView) {
+    if (NULL == pWebPageWidget) {
         session_->logger().Log(kWarningLogLevel, "checkView - no such web view("+viewId.id()+")");
         *error = new Error(kNoSuchWindow);
         return NULL;
     }
 
-    return pWebView;
+    return pWebPageWidget;
 }   
 
 void QWebViewCmdExecutor::CanHandleUrl(const std::string& url, bool* can, Error **error) {
-    QWebView* pWebView = getView(view_id_, error);
+    QWidget* pWebPageWidget = getView(view_id_, error);
 
-    if (NULL == pWebView) {
+    if (NULL == pWebPageWidget) {
 
         *error = new Error(kNoSuchWindow);
         return;
     }
-    *can = QWebViewUtil::isUrlSupported(pWebView->page(), url, error);
+    QWebPage* pWebPage = QWebViewUtil::getWebPage(session_, view_id_);
+    *can = QWebViewUtil::isUrlSupported(pWebPage, url, error);
 }
 
 void QWebViewCmdExecutor::GetElementScreenShot(const ElementId& element, std::string* png, Error** error) {
@@ -713,8 +715,8 @@ void QWebViewCmdExecutor::TouchDoubleClick(const ElementId& element, Error **err
 
     QPoint point = QCommonUtil::ConvertPointToQPoint(location);
 
-    view_->setZoomFactor(2/view_->zoomFactor());
-    view_->page()->mainFrame()->scroll(point.x(), point.y());
+    // view_->setZoomFactor(2/view_->zoomFactor());
+    page_->mainFrame()->scroll(point.x(), point.y());
 }
 
 void QWebViewCmdExecutor::TouchDown(const int &x, const int &y, Error **error) {
@@ -774,7 +776,7 @@ void QWebViewCmdExecutor::TouchLongClick(const ElementId& element, Error **error
 void QWebViewCmdExecutor::TouchScroll(const int &xoffset, const int &yoffset, Error **error) {
     CHECK_VIEW_EXISTANCE
 
-    view_->page()->mainFrame()->scroll(xoffset, yoffset);
+    page_->mainFrame()->scroll(xoffset, yoffset);
 }
 
 void QWebViewCmdExecutor::TouchScroll(const ElementId &element, const int &xoffset, const int &yoffset, Error **error) {
@@ -823,7 +825,7 @@ void QWebViewCmdExecutor::TouchScroll(const ElementId &element, const int &xoffs
 void QWebViewCmdExecutor::TouchFlick(const int &xSpeed, const int &ySpeed, Error **error) {
     CHECK_VIEW_EXISTANCE
 
-    view_->page()->mainFrame()->scroll(xSpeed*3, ySpeed*3);
+    page_->mainFrame()->scroll(xSpeed*3, ySpeed*3);
 }
 
 void QWebViewCmdExecutor::TouchFlick(const ElementId &element, const int &xoffset, const int &yoffset, const int &speed, Error **error) {
@@ -1049,15 +1051,15 @@ void QWebViewCmdExecutor::GetMute(const ElementId &element, bool *mute, Error **
 void QWebViewCmdExecutor::VisualizerSource(std::string* source, Error** error) {
     CHECK_VIEW_EXISTANCE
 
-    QWebViewVisualizerSourceCommand command(webkitProxy_, session_, view_);
-    command.Execute(source, error);
+    // QWebViewVisualizerSourceCommand command(webkitProxy_, session_, view_);
+    // command.Execute(source, error);
 }
 
 void QWebViewCmdExecutor::VisualizerShowPoint(Error** error) {
     CHECK_VIEW_EXISTANCE
 
-    QWebViewVisualizerShowPointCommand command(webkitProxy_, session_, view_);
-    command.Execute(error);
+    // QWebViewVisualizerShowPointCommand command(webkitProxy_, session_, view_);
+    // command.Execute(error);
 }
 
 void QWebViewCmdExecutor::SetOnline(bool online, Error** error) {

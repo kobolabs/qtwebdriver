@@ -25,7 +25,7 @@
 #include "webdriver_logging.h"
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-#include <QtWebKitWidgets/QWebView>
+#include <QtWebKitWidgets/QWebPage>
 #include <QtWebKit/QWebHistory>
 #else
 #include <QtWebKit/QtWebKit>
@@ -151,11 +151,12 @@ public:
     virtual void TouchPinchRotate(const ElementId &element, const int &angle, Error** error);
 
 protected:
-	QWebView* getView(const ViewId& viewId, Error** error);
+	QWidget* getView(const ViewId& viewId, Error** error);
 
 private:
     yasper::ptr<QWebkitProxy> webkitProxy_;
-    QWebView* view_;
+    QWidget* view_;
+    QWebPage* page_;
 
     DISALLOW_COPY_AND_ASSIGN(QWebViewCmdExecutor);
     friend class QWebViewVisualizerSourceCommand;
