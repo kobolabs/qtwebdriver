@@ -1432,6 +1432,11 @@ Error* QWebkitProxy::ExecuteScriptImpl(QWebFrame* frame,
                                std::string *result,
                                bool isAsync)
 {
+    auto settings = frame->page()->settings();
+    if (settings) {
+        settings->setAttribute(QWebSettings::JavascriptEnabled, true);
+    }
+
     std::string res;
     if (isAsync)
     {
