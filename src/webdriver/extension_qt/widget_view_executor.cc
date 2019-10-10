@@ -1033,32 +1033,58 @@ void QWidgetViewCmdExecutor::GetURL(std::string* url, Error** error) {
 }
 
 void QWidgetViewCmdExecutor::TouchClick(const ElementId& element, Error **error) {
+    QWidget* view = getView(view_id_, error);
+    if (NULL == view)
+        return;
+
+    Point location(0, 0);
+    // calculate the half of the element size and translate by it.
+    Size size;
+    GetElementSize(element, &size, error);
+    if (*error)
+        return;
+
+    location.Offset(size.width() / 2, size.height() / 2);
+
+    QPoint point = QCommonUtil::ConvertPointToQPoint(location);
+
     QWidget* pWidget = getWidget(element, error);
     if (NULL == pWidget)
         return;
 
-    QPoint point = pWidget->rect().center();
-    QPoint scenePoint = pWidget->mapToGlobal(point);
-
-    QTouchEvent *touchBeginEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, QPointF(point), QPointF(scenePoint));
-    QTouchEvent *touchEndEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, QPointF(point), QPointF(scenePoint));
+    QTouchEvent *touchBeginEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, QPointF(point));
+    QTouchEvent *touchEndEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, QPointF(point));
 
     QApplication::postEvent(pWidget, touchBeginEvent);
     QApplication::postEvent(pWidget, touchEndEvent);
 }
 
 void QWidgetViewCmdExecutor::TouchDoubleClick(const ElementId& element, Error **error) {
+    QWidget* view = getView(view_id_, error);
+    if (NULL == view)
+        return;
+
+    Point location(0, 0);
+    // calculate the half of the element size and translate by it.
+    Size size;
+    GetElementSize(element, &size, error);
+    if (*error)
+        return;
+
+    location.Offset(size.width() / 2, size.height() / 2);
+
+    QPoint point = QCommonUtil::ConvertPointToQPoint(location);
+
     QWidget* pWidget = getWidget(element, error);
     if (NULL == pWidget)
         return;
 
-    QPoint point = pWidget->rect().center();
-    QPoint scenePoint = pWidget->mapToGlobal(point);
+//    point = pWidget->mapToGlobal(point);
 
-    QTouchEvent *touchBeginEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, QPointF(point), QPointF(scenePoint));
-    QTouchEvent *touchEndEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, QPointF(point), QPointF(scenePoint));
-    QTouchEvent *touchBeginEvent2 = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, QPointF(point), QPointF(scenePoint));
-    QTouchEvent *touchEndEvent2 = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, QPointF(point), QPointF(scenePoint));
+    QTouchEvent *touchBeginEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, QPointF(point));
+    QTouchEvent *touchEndEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, QPointF(point));
+    QTouchEvent *touchBeginEvent2 = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, QPointF(point));
+    QTouchEvent *touchEndEvent2 = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, QPointF(point));
 
     QApplication::postEvent(pWidget, touchBeginEvent);
     QApplication::postEvent(pWidget, touchEndEvent);
@@ -1071,17 +1097,17 @@ void QWidgetViewCmdExecutor::TouchDown(const int &x, const int &y, Error **error
     if (NULL == view)
         return;
 
-    QPoint scenePoint = QCommonUtil::ConvertPointToQPoint(Point(x, y));
-    QPoint viewPoint = view->mapFromGlobal(scenePoint);
+    QPoint point = QCommonUtil::ConvertPointToQPoint(Point(x, y));
 
     // Find child widget that will receive event
-    QWidget *receiverWidget = view->childAt(viewPoint);
-    if (NULL == receiverWidget) {
+    QWidget *receiverWidget = view->childAt(point);
+    if (NULL != receiverWidget) {
+        point = receiverWidget->mapFrom(view, point);
+    } else {
         receiverWidget = view;
     }
-    QPoint point = receiverWidget->mapFromGlobal(scenePoint);
 
-    QTouchEvent *touchBeginEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, point, scenePoint);
+    QTouchEvent *touchBeginEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, point);
 
     QApplication::postEvent(receiverWidget, touchBeginEvent);
 
@@ -1093,17 +1119,17 @@ void QWidgetViewCmdExecutor::TouchUp(const int &x, const int &y, Error **error) 
     if (NULL == view)
         return;
 
-    QPoint scenePoint = QCommonUtil::ConvertPointToQPoint(Point(x, y));
-    QPoint viewPoint = view->mapFromGlobal(scenePoint);
+    QPoint point = QCommonUtil::ConvertPointToQPoint(Point(x, y));
 
     // Find child widget that will receive event
-    QWidget *receiverWidget = view->childAt(viewPoint);
-    if (NULL == receiverWidget) {
+    QWidget *receiverWidget = view->childAt(point);
+    if (NULL != receiverWidget) {
+        point = receiverWidget->mapFrom(view, point);
+    } else {
         receiverWidget = view;
     }
-    QPoint point = receiverWidget->mapFromGlobal(scenePoint);
 
-    QTouchEvent *touchEndEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, point, scenePoint);
+    QTouchEvent *touchEndEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, point);
 
     QApplication::postEvent(receiverWidget, touchEndEvent);
 
@@ -1115,17 +1141,17 @@ void QWidgetViewCmdExecutor::TouchMove(const int &x, const int &y, Error **error
     if (NULL == view)
         return;
 
-    QPoint scenePoint = QCommonUtil::ConvertPointToQPoint(Point(x, y));
-    QPoint viewPoint = view->mapFromGlobal(scenePoint);
+    QPoint point = QCommonUtil::ConvertPointToQPoint(Point(x, y));
 
     // Find child widget that will receive event
-    QWidget *receiverWidget = view->childAt(viewPoint);
-    if (NULL == receiverWidget) {
+    QWidget *receiverWidget = view->childAt(point);
+    if (NULL != receiverWidget) {
+        point = receiverWidget->mapFrom(view, point);
+    } else {
         receiverWidget = view;
     }
-    QPoint point = receiverWidget->mapFromGlobal(scenePoint);
 
-    QTouchEvent *touchMoveEvent = createSimpleTouchEvent(QEvent::TouchUpdate, Qt::TouchPointMoved, point, scenePoint);
+    QTouchEvent *touchMoveEvent = createSimpleTouchEvent(QEvent::TouchUpdate, Qt::TouchPointMoved, point);
 
     QApplication::postEvent(receiverWidget, touchMoveEvent);
 
@@ -1133,21 +1159,35 @@ void QWidgetViewCmdExecutor::TouchMove(const int &x, const int &y, Error **error
 }
 
 void QWidgetViewCmdExecutor::TouchLongClick(const ElementId& element, Error **error) {
+    QWidget* view = getView(view_id_, error);
+    if (NULL == view)
+        return;
+
+    Point location(0, 0);
+    // calculate the half of the element size and translate by it.
+    Size size;
+    GetElementSize(element, &size, error);
+    if (*error)
+        return;
+
+    location.Offset(size.width() / 2, size.height() / 2);
+
+    QPoint point = QCommonUtil::ConvertPointToQPoint(location);
+
     QWidget* pWidget = getWidget(element, error);
     if (NULL == pWidget)
         return;
 
-    QPoint point = pWidget->rect().center();
-    QPoint scenePoint = pWidget->mapToGlobal(point);
+//    point = pWidget->mapToGlobal(point);
 
-    QTouchEvent *touchBeginEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, point, scenePoint);
-    QApplication::postEvent(pWidget, touchBeginEvent);
+    QTouchEvent *touchBeginEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, point);
+    QApplication::postEvent(view, touchBeginEvent);
 
     QEventLoop loop;
     QTimer::singleShot(1000, &loop, SLOT(quit()));
     loop.exec();
 
-    QTouchEvent *touchEndEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, point, scenePoint);
+    QTouchEvent *touchEndEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, point);
     QApplication::postEvent(pWidget, touchEndEvent);
 }
 
