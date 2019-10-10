@@ -1181,16 +1181,15 @@ void QWidgetViewCmdExecutor::TouchScroll(const ElementId &element, const int &xo
 
     for (int i = 0; i <= stepCount; ++i)
     {
-        QPoint touchPoint(startPoint.x()+offsetPoint.x()*i/stepCount, startPoint.y()+offsetPoint.y()*i/stepCount);
-        QPoint scenePoint = pWidget->mapToGlobal(touchPoint);
+        QPointF touchPoint(startPoint.x()+offsetPoint.x()*i/stepCount, startPoint.y()+offsetPoint.y()*i/stepCount);
 
         QTouchEvent *touchEvent;
         if (i == 0)
-            touchEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, touchPoint, scenePoint);
+            touchEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, touchPoint);
         else if (i == stepCount)
-            touchEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, touchPoint, scenePoint);
+            touchEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, touchPoint);
         else
-            touchEvent = createSimpleTouchEvent(QEvent::TouchUpdate, Qt::TouchPointMoved, touchPoint, scenePoint);
+            touchEvent = createSimpleTouchEvent(QEvent::TouchUpdate, Qt::TouchPointMoved, touchPoint);
 
 
         QApplication::postEvent(pWidget, touchEvent);
@@ -1234,16 +1233,15 @@ void QWidgetViewCmdExecutor::TouchFlick(const ElementId &element, const int &xof
 
     for (int i = 0; i <= stepCount; ++i)
     {
-        QPoint touchPoint(startPoint.x()+offsetPoint.x()*i/stepCount, startPoint.y()+offsetPoint.y()*i/stepCount);
-        QPoint scenePoint = pWidget->mapToGlobal(touchPoint);
+        QPointF touchPoint(startPoint.x()+offsetPoint.x()*i/stepCount, startPoint.y()+offsetPoint.y()*i/stepCount);
 
         QTouchEvent *touchEvent;
         if (i == 0)
-            touchEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, touchPoint, scenePoint);
+            touchEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, touchPoint);
         else if (i == stepCount)
-            touchEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, touchPoint, scenePoint);
+            touchEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, touchPoint);
         else
-            touchEvent = createSimpleTouchEvent(QEvent::TouchUpdate, Qt::TouchPointMoved, touchPoint, scenePoint);
+            touchEvent = createSimpleTouchEvent(QEvent::TouchUpdate, Qt::TouchPointMoved, touchPoint);
 
         QApplication::postEvent(pWidget, touchEvent);
         QTimer::singleShot(timeBetweenEvent, &loop, SLOT(quit()));
