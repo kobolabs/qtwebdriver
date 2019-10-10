@@ -1052,6 +1052,7 @@ void QWidgetViewCmdExecutor::TouchClick(const ElementId& element, Error **error)
     if (NULL == pWidget)
         return;
 
+    point = pWidget->mapToGlobal(point);
     QTouchEvent *touchBeginEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, QPointF(point));
     QTouchEvent *touchEndEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, QPointF(point));
 
@@ -1079,8 +1080,7 @@ void QWidgetViewCmdExecutor::TouchDoubleClick(const ElementId& element, Error **
     if (NULL == pWidget)
         return;
 
-//    point = pWidget->mapToGlobal(point);
-
+    point = pWidget->mapToGlobal(point);
     QTouchEvent *touchBeginEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, QPointF(point));
     QTouchEvent *touchEndEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, QPointF(point));
     QTouchEvent *touchBeginEvent2 = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, QPointF(point));
@@ -1107,6 +1107,7 @@ void QWidgetViewCmdExecutor::TouchDown(const int &x, const int &y, Error **error
         receiverWidget = view;
     }
 
+    point = receiverWidget->mapToGlobal(point);
     QTouchEvent *touchBeginEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, point);
 
     QApplication::postEvent(receiverWidget, touchBeginEvent);
@@ -1129,6 +1130,7 @@ void QWidgetViewCmdExecutor::TouchUp(const int &x, const int &y, Error **error) 
         receiverWidget = view;
     }
 
+    point = receiverWidget->mapToGlobal(point);
     QTouchEvent *touchEndEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, point);
 
     QApplication::postEvent(receiverWidget, touchEndEvent);
@@ -1151,6 +1153,7 @@ void QWidgetViewCmdExecutor::TouchMove(const int &x, const int &y, Error **error
         receiverWidget = view;
     }
 
+    point = receiverWidget->mapToGlobal(point);
     QTouchEvent *touchMoveEvent = createSimpleTouchEvent(QEvent::TouchUpdate, Qt::TouchPointMoved, point);
 
     QApplication::postEvent(receiverWidget, touchMoveEvent);
@@ -1178,8 +1181,7 @@ void QWidgetViewCmdExecutor::TouchLongClick(const ElementId& element, Error **er
     if (NULL == pWidget)
         return;
 
-//    point = pWidget->mapToGlobal(point);
-
+    point = pWidget->mapToGlobal(point);
     QTouchEvent *touchBeginEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, point);
     QApplication::postEvent(view, touchBeginEvent);
 
@@ -1212,7 +1214,7 @@ void QWidgetViewCmdExecutor::TouchScroll(const ElementId &element, const int &xo
     if (NULL == pWidget)
         return;
 
-//    startPoint = pWidget->mapToGlobal(startPoint);
+    startPoint = pWidget->mapToGlobal(startPoint);
     Point offset(xoffset, yoffset);
     QPoint offsetPoint = QCommonUtil::ConvertPointToQPoint(offset);
     int stepCount = 20;
@@ -1259,7 +1261,7 @@ void QWidgetViewCmdExecutor::TouchFlick(const ElementId &element, const int &xof
     if (NULL == pWidget)
         return;
 
-//    startPoint = pWidget->mapToGlobal(startPoint);
+    startPoint = pWidget->mapToGlobal(startPoint);
 
     QPoint offsetPoint = QCommonUtil::ConvertPointToQPoint(Point(xoffset, yoffset));
 

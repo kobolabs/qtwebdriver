@@ -370,6 +370,8 @@ QTouchEvent::TouchPoint QViewCmdExecutor::createTouchPoint(Qt::TouchPointState s
 {
     QTouchEvent::TouchPoint touchPoint(1);
     touchPoint.setPos(point);
+    touchPoint.setScreenPos(point);
+    touchPoint.setScenePos(point);
     touchPoint.setState(state);
     touchPoint.setPressure(1);
     return touchPoint;
