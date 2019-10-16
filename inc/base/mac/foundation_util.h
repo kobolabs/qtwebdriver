@@ -40,9 +40,6 @@ typedef unsigned int NSSearchPathDomainMask;
 #endif
 #endif
 
-typedef struct OpaqueSecTrustRef* SecACLRef;
-typedef struct OpaqueSecTrustedApplicationRef* SecTrustedApplicationRef;
-
 namespace base {
 namespace mac {
 
