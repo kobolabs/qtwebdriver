@@ -11,7 +11,7 @@ versionfile.write("extern const char kProductName[] = \"WebDriver-cisco-cmt\";\n
 versionfile.write("extern const char kVersionNumber[] = \"1.3.3\";\n")
 versionfile.write("extern const char kBuildTime[] = __TIME__;\n")
 versionfile.write("extern const char kBuildDate[] = __DATE__;\n")
-versionfile.write("extern const char kLastChanges[] = \"" + data.strip() + "\";\n")
+versionfile.write("extern const char kLastChanges[] = \"" + data.strip().decode("utf-8") + "\";\n")
 versionfile.write("}")
 versionfile.close()
 
