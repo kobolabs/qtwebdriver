@@ -1265,17 +1265,15 @@ void QWidgetViewCmdExecutor::TouchFlick(const ElementId &element, const int &xof
 
     QPoint offsetPoint = QCommonUtil::ConvertPointToQPoint(Point(xoffset, yoffset));
 
-    QEventLoop loop;
-
     //some magic numbers
-    int stepCount = 20;
-    int timeBetweenEvent = 30/(speed+1);
-
-//    QVector2D velocity(xoffset*1000/(stepCount*timeBetweenEvent), yoffset*1000/(stepCount*timeBetweenEvent));
+    int stepCount = 10;
+    int timeBetweenEvent = 200 / stepCount;
 
     for (int i = 0; i <= stepCount; ++i)
     {
-        QPointF touchPoint(startPoint.x()+offsetPoint.x()*i/stepCount, startPoint.y()+offsetPoint.y()*i/stepCount);
+        int x = startPoint.x() + qRound(((qreal)offsetPoint.x() / stepCount) * i);
+        int y = startPoint.y() + qRound(((qreal)offsetPoint.y() / stepCount) * i);
+        QPointF touchPoint(x, y);
 
         QTouchEvent *touchEvent;
         if (i == 0)
@@ -1285,9 +1283,8 @@ void QWidgetViewCmdExecutor::TouchFlick(const ElementId &element, const int &xof
         else
             touchEvent = createSimpleTouchEvent(QEvent::TouchUpdate, Qt::TouchPointMoved, touchPoint);
 
-        QApplication::postEvent(pWidget, touchEvent);
-        QTimer::singleShot(timeBetweenEvent, &loop, SLOT(quit()));
-        loop.exec();
+        int t = timeBetweenEvent * i;
+        QTimer::singleShot(t, pWidget, [=] { QApplication::postEvent(pWidget, touchEvent); } );
     }
 }
 
