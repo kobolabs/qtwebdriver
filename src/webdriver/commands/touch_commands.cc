@@ -25,6 +25,7 @@
 
 #include "base/values.h"
 #include "base/bind.h"
+#include "base/synchronization/waitable_event.h"
 
 namespace webdriver {
 
@@ -229,16 +230,19 @@ void TouchScrollCommand::ExecutePost(Response *const response)
 
     if (has_element_) {
         ElementId element = ElementId(element_name);
-        typedef void (ViewCmdExecutor::*TouchScroll)(const ElementId&, const int&, const int&, Error**);
+        typedef void (ViewCmdExecutor::*TouchScroll)(const ElementId&, const int&, const int&, base::WaitableEvent*, Error**);
         TouchScroll touchScroll = static_cast<TouchScroll>(&ViewCmdExecutor::TouchScroll);
 
+        base::WaitableEvent touch_waiter(true, true);
         session_->RunSessionTask(base::Bind(
             touchScroll,
             base::Unretained(executor_.get()),
             element,
             x,
             y,
+            &touch_waiter,
             &error));
+        touch_waiter.Wait();
     }
     else
     {
@@ -255,9 +259,7 @@ void TouchScrollCommand::ExecutePost(Response *const response)
 
     if (error) {
         response->SetError(error);
-        return;
     }
-
 }
 
 TouchLongClickCommand::TouchLongClickCommand(const std::vector<std::string>& path_segments,
@@ -281,17 +283,19 @@ void TouchLongClickCommand::ExecutePost(Response *const response)
 
     ElementId element = ElementId(element_name);
 
+    base::WaitableEvent touch_waiter(true, true);
     session_->RunSessionTask(base::Bind(
             &ViewCmdExecutor::TouchLongClick,
             base::Unretained(executor_.get()),
             element,
+            &touch_waiter,
             &error));
+    touch_waiter.Wait();
 
     if (error) {
         response->SetError(error);
         return;
     }
-
 }
 
 TouchFlickCommand::TouchFlickCommand(const std::vector<std::string>& path_segments,
@@ -325,9 +329,10 @@ void TouchFlickCommand::ExecutePost(Response *const response)
              GetIntegerParameter("yoffset", &yoffset) && GetIntegerParameter("speed", &speed))
     {
         ElementId element = ElementId(element_name);
-        typedef void (ViewCmdExecutor::*TouchFlick)(const ElementId&, const int&, const int&, const int&, Error**);
+        typedef void (ViewCmdExecutor::*TouchFlick)(const ElementId&, const int&, const int&, const int&, base::WaitableEvent*, Error**);
         TouchFlick touchFlick = static_cast<TouchFlick>(&ViewCmdExecutor::TouchFlick);
 
+        base::WaitableEvent touch_waiter(true, true);
         session_->RunSessionTask(base::Bind(
             touchFlick,
             base::Unretained(executor_.get()),
@@ -335,7 +340,9 @@ void TouchFlickCommand::ExecutePost(Response *const response)
             xoffset,
             yoffset,
             speed,
+            &touch_waiter,
             &error));
+        touch_waiter.Wait();
     }
     else
     {

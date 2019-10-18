@@ -21,6 +21,7 @@
 
 #include "base/stringprintf.h"
 #include "base/string_number_conversions.h"
+#include "base/synchronization/waitable_event.h"
 
 #include "value_conversion_util.h"
 #include "webdriver_session.h"
@@ -1161,7 +1162,7 @@ void QWidgetViewCmdExecutor::TouchMove(const int &x, const int &y, Error **error
     QApplication::processEvents();
 }
 
-void QWidgetViewCmdExecutor::TouchLongClick(const ElementId& element, Error **error) {
+void QWidgetViewCmdExecutor::TouchLongClick(const ElementId& element, base::WaitableEvent* touch_waiter, Error **error) {
     QWidget* view = getView(view_id_, error);
     if (NULL == view)
         return;
@@ -1177,23 +1178,27 @@ void QWidgetViewCmdExecutor::TouchLongClick(const ElementId& element, Error **er
 
     QPoint point = QCommonUtil::ConvertPointToQPoint(location);
 
-    QWidget* pWidget = getWidget(element, error);
-    if (NULL == pWidget)
+    QPointer<QWidget> pWidget = getWidget(element, error);
+    if (pWidget.isNull())
         return;
+
+    touch_waiter->Reset(); // block server response until touches are complete
 
     point = pWidget->mapToGlobal(point);
     QTouchEvent *touchBeginEvent = createSimpleTouchEvent(QEvent::TouchBegin, Qt::TouchPointPressed, point);
-    QApplication::postEvent(view, touchBeginEvent);
-
-    QEventLoop loop;
-    QTimer::singleShot(1000, &loop, SLOT(quit()));
-    loop.exec();
+    QApplication::sendEvent(pWidget, touchBeginEvent);
+    delete touchBeginEvent;
 
     QTouchEvent *touchEndEvent = createSimpleTouchEvent(QEvent::TouchEnd, Qt::TouchPointReleased, point);
-    QApplication::postEvent(pWidget, touchEndEvent);
+    QTimer::singleShot(1000, qApp, [=] {
+        if (pWidget)
+            QApplication::sendEvent(pWidget, touchEndEvent);
+        delete touchEndEvent;
+        touch_waiter->Signal();
+    });
 }
 
-void QWidgetViewCmdExecutor::TouchScroll(const ElementId &element, const int &xoffset, const int &yoffset, Error **error) {
+void QWidgetViewCmdExecutor::TouchScroll(const ElementId &element, const int &xoffset, const int &yoffset, base::WaitableEvent* touch_waiter, Error **error) {
     QWidget* view = getView(view_id_, error);
     if (NULL == view)
         return;
@@ -1210,16 +1215,17 @@ void QWidgetViewCmdExecutor::TouchScroll(const ElementId &element, const int &xo
 
     QPoint startPoint = QCommonUtil::ConvertPointToQPoint(location);
 
-    QWidget* pWidget = getWidget(element, error);
-    if (NULL == pWidget)
+    QPointer<QWidget> pWidget = getWidget(element, error);
+    if (pWidget.isNull())
         return;
+
+    touch_waiter->Reset(); // block server response until touches are complete
 
     startPoint = pWidget->mapToGlobal(startPoint);
     Point offset(xoffset, yoffset);
     QPoint offsetPoint = QCommonUtil::ConvertPointToQPoint(offset);
     int stepCount = 20;
     int timeBetweenEvent = 30;
-    QEventLoop loop;
 
     for (int i = 0; i <= stepCount; ++i)
     {
@@ -1233,14 +1239,17 @@ void QWidgetViewCmdExecutor::TouchScroll(const ElementId &element, const int &xo
         else
             touchEvent = createSimpleTouchEvent(QEvent::TouchUpdate, Qt::TouchPointMoved, touchPoint);
 
-
-        QApplication::postEvent(pWidget, touchEvent);
-        QTimer::singleShot(timeBetweenEvent, &loop, SLOT(quit()));
-        loop.exec();
+        QTimer::singleShot(timeBetweenEvent * i, qApp, [=] {
+            if (pWidget)
+                QApplication::sendEvent(pWidget, touchEvent);
+            delete touchEvent;
+            if (i == stepCount)
+                touch_waiter->Signal();
+        });
     }
 }
 
-void QWidgetViewCmdExecutor::TouchFlick(const ElementId &element, const int &xoffset, const int &yoffset, const int &speed, Error **error) {
+void QWidgetViewCmdExecutor::TouchFlick(const ElementId &element, const int &xoffset, const int &yoffset, const int &speed, base::WaitableEvent* touch_waiter, Error **error) {
     QWidget* view = getView(view_id_, error);
     if (NULL == view)
         return;
@@ -1257,9 +1266,11 @@ void QWidgetViewCmdExecutor::TouchFlick(const ElementId &element, const int &xof
 
     QPoint startPoint = QCommonUtil::ConvertPointToQPoint(location);
 
-    QWidget* pWidget = getWidget(element, error);
-    if (NULL == pWidget)
+    QPointer<QWidget> pWidget = getWidget(element, error);
+    if (pWidget.isNull())
         return;
+
+    touch_waiter->Reset(); // block server response until touches are complete
 
     startPoint = pWidget->mapToGlobal(startPoint);
 
@@ -1284,7 +1295,13 @@ void QWidgetViewCmdExecutor::TouchFlick(const ElementId &element, const int &xof
             touchEvent = createSimpleTouchEvent(QEvent::TouchUpdate, Qt::TouchPointMoved, touchPoint);
 
         int t = timeBetweenEvent * i;
-        QTimer::singleShot(t, pWidget, [=] { QApplication::postEvent(pWidget, touchEvent); } );
+        QTimer::singleShot(t, qApp, [=] {
+            if (pWidget)
+                QApplication::sendEvent(pWidget, touchEvent);
+            delete touchEvent;
+            if (i == stepCount)
+                touch_waiter->Signal();
+        });
     }
 }
 
