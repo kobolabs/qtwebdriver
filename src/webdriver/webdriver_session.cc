@@ -121,6 +121,8 @@ bool Session::InitActualCapabilities() {
 bool Session::InitKoboCapabilities() {
     if (const char* product = getenv("PRODUCT")) {
         capabilities_.caps->SetString(Capabilities::kKoboDeviceName, product);
+    } else {
+        capabilities_.caps->SetString(Capabilities::kKoboDeviceName, "desktop");
     }
 
     QSettings affiliateSettings(QLatin1String("/mnt/onboard/.kobo/affiliate.conf"), QSettings::IniFormat);
