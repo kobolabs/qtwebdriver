@@ -22,6 +22,7 @@
 #include "base/stringprintf.h"
 #include "base/string_number_conversions.h"
 #include "base/json/json_writer.h"
+#include "base/synchronization/waitable_event.h"
 
 #include "value_conversion_util.h"
 #include "webdriver_session.h"
@@ -1356,7 +1357,7 @@ void Quick2ViewCmdExecutor::TouchMove(const int &x, const int &y, Error **error)
     QGuiApplication::processEvents();
 }
 
-void Quick2ViewCmdExecutor::TouchLongClick(const ElementId& element, Error **error)
+void Quick2ViewCmdExecutor::TouchLongClick(const ElementId& element, base::WaitableEvent* touch_waiter, Error **error)
 {
     QQuickWindow* view = getView(view_id_, error);
     if (NULL == view)
@@ -1395,7 +1396,7 @@ void Quick2ViewCmdExecutor::TouchLongClick(const ElementId& element, Error **err
 
 }
 
-void Quick2ViewCmdExecutor::TouchScroll(const ElementId &element, const int &xoffset, const int &yoffset, Error **error)
+void Quick2ViewCmdExecutor::TouchScroll(const ElementId &element, const int &xoffset, const int &yoffset, base::WaitableEvent* touch_waiter, Error **error)
 {
     QQuickWindow* view = getView(view_id_, error);
     if (NULL == view)
@@ -1445,7 +1446,7 @@ void Quick2ViewCmdExecutor::TouchScroll(const ElementId &element, const int &xof
     QGuiApplication::processEvents();
 }
 
-void Quick2ViewCmdExecutor::TouchFlick(const ElementId &element, const int &xoffset, const int &yoffset, const int &speed, Error **error)
+void Quick2ViewCmdExecutor::TouchFlick(const ElementId &element, const int &xoffset, const int &yoffset, const int &speed, base::WaitableEvent* touch_waiter, Error **error)
 {
     QQuickWindow* view = getView(view_id_, error);
     if (NULL == view)

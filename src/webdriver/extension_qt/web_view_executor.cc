@@ -20,6 +20,7 @@
 #include "extension_qt/web_view_executor.h"
 
 #include "base/stringprintf.h"
+#include "base/synchronization/waitable_event.h"
 
 #include "value_conversion_util.h"
 #include "webdriver_session.h"
@@ -749,7 +750,7 @@ void QWebViewCmdExecutor::TouchMove(const int &x, const int &y, Error **error) {
     QApplication::postEvent(view_, touchMoveEvent);
 }
 
-void QWebViewCmdExecutor::TouchLongClick(const ElementId& element, Error **error) {
+void QWebViewCmdExecutor::TouchLongClick(const ElementId& element, base::WaitableEvent* touch_waiter, Error **error) {
     CHECK_VIEW_EXISTANCE
 
     Point location;
@@ -779,7 +780,7 @@ void QWebViewCmdExecutor::TouchScroll(const int &xoffset, const int &yoffset, Er
     page_->mainFrame()->scroll(xoffset, yoffset);
 }
 
-void QWebViewCmdExecutor::TouchScroll(const ElementId &element, const int &xoffset, const int &yoffset, Error **error) {
+void QWebViewCmdExecutor::TouchScroll(const ElementId &element, const int &xoffset, const int &yoffset, base::WaitableEvent* touch_waiter, Error **error) {
     CHECK_VIEW_EXISTANCE
 
     Point location;
@@ -828,7 +829,7 @@ void QWebViewCmdExecutor::TouchFlick(const int &xSpeed, const int &ySpeed, Error
     page_->mainFrame()->scroll(xSpeed*3, ySpeed*3);
 }
 
-void QWebViewCmdExecutor::TouchFlick(const ElementId &element, const int &xoffset, const int &yoffset, const int &speed, Error **error) {
+void QWebViewCmdExecutor::TouchFlick(const ElementId &element, const int &xoffset, const int &yoffset, const int &speed, base::WaitableEvent* touch_waiter, Error **error) {
     CHECK_VIEW_EXISTANCE
 
     Point location;

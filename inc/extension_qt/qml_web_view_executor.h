@@ -128,11 +128,11 @@ public:
     virtual void TouchDown(const int &x, const int &y, Error **error) NOT_SUPPORTED_IMPL;
     virtual void TouchUp(const int &x, const int &y, Error **error) NOT_SUPPORTED_IMPL;
     virtual void TouchMove(const int &x, const int &y, Error **error) NOT_SUPPORTED_IMPL;
-    virtual void TouchLongClick(const ElementId& element, Error **error) NOT_SUPPORTED_IMPL;
+    virtual void TouchLongClick(const ElementId& element, base::WaitableEvent* touch_waiter, Error **error) NOT_SUPPORTED_IMPL;
     virtual void TouchScroll(const int &xoffset, const int &yoffset, Error **error) NOT_SUPPORTED_IMPL;
-    virtual void TouchScroll(const ElementId &element, const int &xoffset, const int &yoffset, Error **error) NOT_SUPPORTED_IMPL;
+    virtual void TouchScroll(const ElementId &element, const int &xoffset, const int &yoffset, base::WaitableEvent* touch_waiter, Error **error) NOT_SUPPORTED_IMPL;
     virtual void TouchFlick(const int &xSpeed, const int &ySpeed, Error **error) NOT_SUPPORTED_IMPL;
-    virtual void TouchFlick(const ElementId &element, const int &xoffset, const int &yoffset, const int &speed, Error **error) NOT_SUPPORTED_IMPL;
+    virtual void TouchFlick(const ElementId &element, const int &xoffset, const int &yoffset, const int &speed, base::WaitableEvent* touch_waiter, Error **error) NOT_SUPPORTED_IMPL;
     virtual void GetBrowserLog(base::ListValue** browserLog, Error **error);
     virtual void GetPlayerState(const ElementId& element, PlayerState*, Error**);
     virtual void SetPlayerState(const ElementId& element, PlayerState, Error**);
